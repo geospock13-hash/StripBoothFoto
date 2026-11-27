@@ -1566,16 +1566,28 @@ async function renderGallery(){
   const g=$('gallery');g.innerHTML='';galSel.clear();
   if(!ONLINE){$('galTools').style.display='none';g.innerHTML='<p class="note">Disponible al abrir con Iniciar StripBooth.bat.</p>';return}
   $('galTools').style.display='';
-  if(!galSelMode)$('galInfo').innerHTML=`Tiras guardadas del evento. Toca una para volver a imprimirla.`;
+  if(!galSelMode)$('galInfo').innerHTML=`Tiras guardadas de este evento. Toca una para verla en grande.`;
   let lista=[];try{lista=await (await fetch('api/galeria?evento='+encodeURIComponent(ev))).json()}catch(e){}
   if(!lista.length){g.innerHTML='<p class="note">Aún no hay tiras de este evento.</p>';return}
-  lista.forEach(f=>{const b=document.createElement('button');const src=`evento/${encodeURIComponent(ev)}/${encodeURIComponent(f)}`;b.dataset.f=f;
-    b.innerHTML=`<img src="${src}" alt="${f}" loading="lazy">`;b.title='Imprimir de nuevo';
+  for(const f of lista){const b=document.createElement('button');b.dataset.f=f;
+    const img=document.createElement('img');img.alt=f;img.loading='lazy';
+    const src=(window.SBF_ANDROID?await window.SBF.galeriaSrc(ev,f):`evento/${encodeURIComponent(ev)}/${encodeURIComponent(f)}`);
+    img.src=src;b.appendChild(img);b.title='Ver';
     b.onclick=async()=>{
       if(galSelMode){const on=b.classList.toggle('sel');if(on)galSel.add(f);else galSel.delete(f);$('delSelBtn').textContent='Borrar seleccionadas';const n=$('gallery').querySelectorAll('button').length;$('selAllBtn').textContent=(n&&galSel.size>=n)?'Quitar selección':'Seleccionar todo';return}
+      if(window.SBF_ANDROID){verTiraGrande(src);return}
       printStrip(await tiraADataURL(src),1);
     };
-    g.appendChild(b)});
+    g.appendChild(b)}
+}
+function verTiraGrande(src){
+  let ov=document.getElementById('tiraVer');
+  if(!ov){ov=document.createElement('div');ov.id='tiraVer';
+    ov.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:18px';
+    ov.onclick=function(){ov.style.display='none';};
+    var im=document.createElement('img');im.style.cssText='max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6)';
+    ov.appendChild(im);document.body.appendChild(ov);}
+  ov.querySelector('img').src=src;ov.style.display='flex';
 }
 $('selModeBtn').onclick=()=>galModo(true);
 $('selCancelBtn').onclick=()=>galModo(false);

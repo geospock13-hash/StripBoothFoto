@@ -34,6 +34,38 @@ jobs:
       - name: Generar la plataforma Android
         run: npx cap add android
 
+      - name: Integrar plugin de carpeta (SAF)
+        run: |
+          PKG=android/app/src/main/java/com/artefgo/stripboothfoto
+          mkdir -p "$PKG"
+          cp native/FolderSaf.java "$PKG/FolderSaf.java"
+          python3 - <<'PY'
+          import re
+          mp = 'android/app/src/main/java/com/artefgo/stripboothfoto/MainActivity.java'
+          s = open(mp, encoding='utf-8').read()
+          if 'registerPlugin(FolderSaf.class)' not in s:
+              s = re.sub(
+                  r'public class MainActivity extends BridgeActivity\s*\{\s*\}',
+                  ('public class MainActivity extends BridgeActivity {\n'
+                   '  @Override\n'
+                   '  public void onCreate(android.os.Bundle savedInstanceState) {\n'
+                   '    registerPlugin(FolderSaf.class);\n'
+                   '    super.onCreate(savedInstanceState);\n'
+                   '  }\n'
+                   '}'),
+                  s)
+              open(mp, 'w', encoding='utf-8').write(s)
+              print('MainActivity: plugin registrado')
+          bg = 'android/app/build.gradle'
+          g = open(bg, encoding='utf-8').read()
+          if 'androidx.documentfile' not in g:
+              g = re.sub(r'(dependencies\s*\{)',
+                         r"\1\n    implementation 'androidx.documentfile:documentfile:1.0.1'",
+                         g, count=1)
+              open(bg, 'w', encoding='utf-8').write(g)
+              print('build.gradle: documentfile agregado')
+          PY
+
       - name: Agregar permisos (cámara / almacenamiento)
         run: |
           python3 - <<'PY'
