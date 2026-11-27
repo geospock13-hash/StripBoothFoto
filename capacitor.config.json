@@ -1,0 +1,8 @@
+{
+  "appId": "com.artefgo.stripboothfoto",
+  "appName": "StripBoothFoto",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": true
+  }
+}
