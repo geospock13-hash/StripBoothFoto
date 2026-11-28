@@ -21,6 +21,8 @@
   var CARPETA_KEY = 'sbf_carpeta';
   var DOCS = 'DOCUMENTS';
   var DATA = 'DATA';
+  // Novedades y promociones: misma página que en la versión de PC.
+  var NEWS_URL = 'https://artefgo.com/news/SBFnews.html';
 
   function plugins() { return (window.Capacitor && window.Capacitor.Plugins) || {}; }
   function FS() { return plugins().Filesystem; }
@@ -239,8 +241,9 @@
     rotacionSet: function () { return Promise.resolve(); },
     imprimir: function () { return Promise.resolve({ ok: true }); },
     estado: function () { return Promise.resolve({ activa: true, tipo: 'android' }); },
-    info: function () { return Promise.resolve({ version: (window.SBF_VERSION || '1.0'), webUrl: '', correoSoporte: '', noticiasUrl: '' }); },
-    infoConfig: function () { return Promise.resolve({ version: (window.SBF_VERSION || '1.0'), noticiasUrl: '' }); }
+    abrirUrl: function (u) { try { window.open(String(u), '_blank'); } catch (e) {} return Promise.resolve({ abierto: true }); },
+    info: function () { return Promise.resolve({ version: (window.SBF_VERSION || '1.0'), webUrl: '', correoSoporte: '', noticiasUrl: NEWS_URL }); },
+    infoConfig: function () { return Promise.resolve({ version: (window.SBF_VERSION || '1.0'), noticiasUrl: NEWS_URL }); }
   };
 
   window.SBF_ANDROID = true;
@@ -250,9 +253,33 @@
     try {
       // Ocultar botón Imprimir
       var pb = document.getElementById('printBtn'); if (pb) pb.style.display = 'none';
-      // Ocultar pestaña 06 (QR) y su panel
-      var qrTab = document.querySelector('[data-tab="qr"]'); if (qrTab) qrTab.style.display = 'none';
-      var qrPane = document.querySelector('[data-pane="qr"]'); if (qrPane) qrPane.style.display = 'none';
+
+      // --- Pestaña 06: convertir "QR y descarga" en "Vista previa" ---
+      // En Android no hay QR de descarga por WiFi; en su lugar el menú 06
+      // muestra cómo va quedando la tira (diseño elegido + texto).
+      try { window.renderQR = function () {}; } catch (e) {}   // sin servidor QR en Android
+      var qrTab = document.querySelector('[data-tab="qr"]');
+      if (qrTab) { qrTab.style.display = ''; qrTab.innerHTML = '<i>06</i>Vista previa'; }
+      var qrPane = document.querySelector('[data-pane="qr"]');
+      var aside = document.querySelector('aside.preview');
+      if (qrPane) {
+        qrPane.style.display = '';
+        qrPane.innerHTML =
+          '<h1>Vista previa</h1>' +
+          '<p class="lead">Así va quedando la tira con el diseño y el texto que elegiste. ' +
+          'Se actualiza sola cuando cambias la personalización en los menús anteriores.</p>';
+        if (aside) {
+          var h3 = aside.querySelector('h3'); if (h3) h3.style.display = 'none';
+          aside.style.display = 'flex';
+          aside.style.border = 'none';
+          aside.style.background = 'transparent';
+          aside.style.padding = '0';
+          aside.style.alignItems = 'center';
+          var pv = document.getElementById('pv');
+          if (pv) { pv.style.maxWidth = '100%'; pv.style.maxHeight = '72vh'; pv.style.height = 'auto'; pv.style.borderRadius = '10px'; pv.style.boxShadow = '0 6px 24px rgba(0,0,0,.18)'; }
+          qrPane.appendChild(aside);
+        }
+      }
       // Renombrar 05 Impresión -> Guardado
       var impTab = document.querySelector('[data-tab="impresion"]'); if (impTab) impTab.innerHTML = '<i>05</i>Guardado';
       var imp = document.querySelector('[data-pane="impresion"]');
