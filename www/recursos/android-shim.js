@@ -23,6 +23,7 @@
   var DATA = 'DATA';
   // Novedades y promociones: misma página que en la versión de PC.
   var NEWS_URL = 'https://artefgo.com/news/SBFnews.html';
+  var WEB_URL = 'https://artefgo.com';
 
   function plugins() { return (window.Capacitor && window.Capacitor.Plugins) || {}; }
   function FS() { return plugins().Filesystem; }
@@ -242,7 +243,8 @@
     imprimir: function () { return Promise.resolve({ ok: true }); },
     estado: function () { return Promise.resolve({ activa: true, tipo: 'android' }); },
     abrirUrl: function (u) { try { window.open(String(u), '_blank'); } catch (e) {} return Promise.resolve({ abierto: true }); },
-    info: function () { return Promise.resolve({ version: (window.SBF_VERSION || '1.0'), webUrl: '', correoSoporte: '', noticiasUrl: NEWS_URL }); },
+    abrirWeb: function () { try { window.open(WEB_URL, '_blank'); } catch (e) {} return Promise.resolve({ abierto: true }); },
+    info: function () { return Promise.resolve({ version: (window.SBF_VERSION || '1.0'), webUrl: WEB_URL, correoSoporte: 'soporte@artefgo.com', noticiasUrl: NEWS_URL }); },
     infoConfig: function () { return Promise.resolve({ version: (window.SBF_VERSION || '1.0'), noticiasUrl: NEWS_URL }); }
   };
 

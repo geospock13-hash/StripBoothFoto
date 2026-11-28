@@ -247,7 +247,7 @@ label.f input.big{font-family:var(--display);font-size:22px;font-weight:700}
       </div>
       <div class="panel">
         <h2>Tipografía del menú</h2>
-        <p class="note">Cambia la letra de todo el menú y de los botones de la cabina. La lista incluye las fuentes instaladas en esta computadora.</p>
+        <p class="note">Cambia la letra de todo el menú y de los botones de la cabina.</p>
         <div class="fontPick" id="uiFontPick"></div>
       </div>
     </section>
@@ -413,7 +413,7 @@ label.f input.big{font-family:var(--display);font-size:22px;font-weight:700}
           </div>
         </div>
         <div class="aboutTag">ENFOCA · FOTOGRAFÍA · GUARDA</div>
-        <div class="aboutCredit">Creado por <b>ArtefGo Labs Studio</b></div>
+        <div class="aboutCredit">Creado por <b>ArtefGo Studio Labs</b></div>
         <p class="note" id="aboutDetalle"></p>
       </div>
       <div class="panel">
@@ -481,13 +481,13 @@ label.f input.big{font-family:var(--display);font-size:22px;font-weight:700}
               <b>Aviso importante.</b> El programa se proporciona <b>"TAL CUAL"</b>, sin garantías de ningún tipo.
               <b>Todo el uso del programa, así como de los marcos, imágenes, logotipos, tipografías, música, textos y
               fotografías que el usuario cargue o utilice, es responsabilidad exclusiva del usuario final.</b>
-              ArtefGo Labs Studio no revisa ni se hace responsable de dicho contenido ni de las autorizaciones o
+              ArtefGo Studio Labs no revisa ni se hace responsable de dicho contenido ni de las autorizaciones o
               consentimientos de las personas fotografiadas. Al instalar y usar StripBoothFoto, el usuario aceptó el
               contrato que se reproduce abajo.
             </div>
 
             <h3>Contrato de Licencia de Usuario Final (EULA)</h3>
-            <p>Titular del software: <b>ArtefGo Labs Studio</b> · Contacto: <b>soporte@artefgo.com</b></p>
+            <p>Titular del software: <b>ArtefGo Studio Labs</b> · Contacto: <b>soporte@artefgo.com</b></p>
             <p>IMPORTANTE: al instalar o usar el programa, el usuario acepta quedar obligado por estos términos. Si no está de acuerdo, no debe instalar ni usar el programa.</p>
 
             <p><b>1. Licencia de uso.</b> El titular concede una licencia personal, limitada, no exclusiva e intransferible para instalar y usar StripBoothFoto conforme al número de serie. Cada número de serie autoriza el uso en 1 equipo, salvo indicación escrita en contrario. La versión de demostración se ofrece solo para evaluación, por tiempo limitado.</p>
@@ -528,7 +528,7 @@ label.f input.big{font-family:var(--display);font-size:22px;font-weight:700}
             <h3>Otros componentes de terceros</h3>
             <p>Electron y las bibliotecas de código abierto empleadas se distribuyen bajo sus respectivas licencias (MIT, BSD y similares), cuyos textos acompañan al programa.</p>
 
-            <p style="margin-top:16px;color:#6b6670;font-size:.8rem">© ArtefGo Labs Studio · artefgo.com · Todos los derechos reservados sobre StripBoothFoto.</p>
+            <p style="margin-top:16px;color:#6b6670;font-size:.8rem">© ArtefGo Studio Labs · artefgo.com · Todos los derechos reservados sobre StripBoothFoto.</p>
           </div>
           <div class="legalFoot">
             <button class="abtn" id="legalOk">Entendido</button>
@@ -1484,10 +1484,12 @@ function fontPicker(el,{get,set,muestra,defLabel}){
     if(!q||defLabel.toLowerCase().includes(q))h+=item('',defLabel,'inherit');
     const inc=INCLUIDAS.filter(([,l])=>!q||l.toLowerCase().includes(q));
     if(inc.length)h+=`<div class="fpGroup">Incluidas con StripBooth</div>`+inc.map(([f,l])=>item(f,l,esc(cssFam(f)))).join('');
-    const sis=sistema.filter(f=>!q||f.toLowerCase().includes(q));
-    h+=`<div class="fpGroup">Instaladas en esta computadora · ${sistema.length}</div>`;
-    h+=sis.length?sis.map(f=>item(f,f,esc(cssFam(f))+',sans-serif')).join('')
-      :`<p class="note" style="padding:6px 10px 10px">${sistema.length?'Ninguna fuente coincide con la búsqueda.':ONLINE?'Buscando fuentes instaladas…':'Abre StripBooth con Iniciar StripBooth.bat para ver las fuentes de la computadora.'}</p>`;
+    if(!window.SBF_ANDROID){
+      const sis=sistema.filter(f=>!q||f.toLowerCase().includes(q));
+      h+=`<div class="fpGroup">Instaladas en esta computadora · ${sistema.length}</div>`;
+      h+=sis.length?sis.map(f=>item(f,f,esc(cssFam(f))+',sans-serif')).join('')
+        :`<p class="note" style="padding:6px 10px 10px">${sistema.length?'Ninguna fuente coincide con la búsqueda.':ONLINE?'Buscando fuentes instaladas…':'Abre StripBooth con Iniciar StripBooth.bat para ver las fuentes de la computadora.'}</p>`;
+    }
     list.innerHTML=h;
     if(scroll){const on=list.querySelector('.on');if(on)list.scrollTop=on.offsetTop-list.offsetTop-80}
   }

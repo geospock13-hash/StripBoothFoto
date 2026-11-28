@@ -14,6 +14,12 @@ jobs:
       - name: Descargar el repositorio
         uses: actions/checkout@v4
 
+      - name: Clave de firma fija (actualizar sin desinstalar)
+        run: |
+          mkdir -p ~/.android
+          cp ci/debug.keystore ~/.android/debug.keystore
+          echo "Firmando siempre con la misma clave (SHA-256 estable)."
+
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
